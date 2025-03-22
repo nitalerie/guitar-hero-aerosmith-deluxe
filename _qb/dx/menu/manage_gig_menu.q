@@ -44,7 +44,7 @@ script create_dx_manage_gig_menu \{Popup = 0}
 		use_backdrop = (1)
 	}
 
-	create_pause_menu_frame x_scale = 1.2 y_scale = 1.2 Z = (<pause_z> - 10)
+	create_pause_menu_frame Scale = 1.4 Z = (<pause_z> - 10)
 
 	CreateScreenElement {
 		Type = SpriteElement
@@ -71,8 +71,8 @@ script create_dx_manage_gig_menu \{Popup = 0}
 		Type = TextElement
 		PARENT = <Id>
 		font = text_a5
-		Scale = (0.6, 0.6)
-		Pos = (0.0, 47)
+		Scale = (1, 1)
+		Pos = (0.0, 105)
 		Id = dx_settings_text
 		Text = 'MANAGE GIG'
 		just = [Center Top]
@@ -99,7 +99,7 @@ script create_dx_manage_gig_menu \{Popup = 0}
 		PARENT = <Id>
 		font = fontgrid_title_gh3
 		Scale = <text_scale>
-		rgba = [210 130 0 250]
+		rgba = $menu_unfocus_color
 		Id = mg_venue
 		Text = "Venue: "
 		just = [Center Top]
@@ -126,7 +126,7 @@ script create_dx_manage_gig_menu \{Popup = 0}
 		PARENT = <Id>
 		font = fontgrid_title_gh3
 		Scale = <text_scale>
-		rgba = [210 130 0 250]
+		rgba = $menu_unfocus_color
 		Id = mg_guitarist
 		Text = "Guitarist: "
 		just = [Center Top]

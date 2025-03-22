@@ -4,12 +4,12 @@ import subprocess
 import sys
 
 commit = subprocess.check_output(["git", "describe", "--always"],text=True).strip("\n")
-version = f"GH3DX Nightly {commit}"
+version = f"GHADX Nightly {commit}"
 
 path = sys.argv[1]
 
 f = open(path, "w")
 
-f.write(f'gh3dx_version = "{version}"')
+f.write(f'ghadx_version = "{version}"')
 
 f.close()

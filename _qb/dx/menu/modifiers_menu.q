@@ -19,7 +19,7 @@ mods_menu_index = 0
 firework_gems = 0
 overlapping_sp = 0
 
-scroller_rgba = [210 130 0 250]
+scroller_rgba = $menu_unfocus_color
 
 modifier_options = [
 	{
@@ -187,7 +187,7 @@ script create_dx_mods_menu \{Popup = 0}
 		use_backdrop = (1)
 	}
 
-	create_pause_menu_frame x_scale = 1.2 y_scale = 1.2 Z = (<pause_z> - 10)
+	create_pause_menu_frame Scale = 1.4 Z = (<pause_z> - 10)
 
 	CreateScreenElement {
 		Type = SpriteElement
@@ -214,8 +214,8 @@ script create_dx_mods_menu \{Popup = 0}
 		Type = TextElement
 		PARENT = <Id>
 		font = text_a5
-		Scale = (0.6, 0.6)
-		Pos = (0.0, 47)
+		Scale = (1, 1)
+		Pos = (0.0, 105)
 		Id = dx_settings_text
 		Text = 'MODIFIERS'
 		just = [Center Top]
@@ -229,7 +229,7 @@ script create_dx_mods_menu \{Popup = 0}
 		Id = dx_settings_scroller_up
 		PARENT = <Id>
 		font = text_a1
-		Pos = (83.0, 105.0)
+		Pos = (110.0, 105.0)
 		Text = '^'
 		rgba = $scroller_rgba
 		just = [Center Top]
@@ -314,7 +314,7 @@ script create_dx_mods_menu \{Popup = 0}
 		PARENT = <Id>
 		font = fontgrid_title_gh3
 		Scale = <text_scale>
-		rgba = [210 130 0 250]
+		rgba = $menu_unfocus_color
 		Id = <text_id>
 		Text = ($modifier_options [<I>].Name)
 		just = [Center Top]
@@ -330,7 +330,7 @@ script create_dx_mods_menu \{Popup = 0}
 	<I> = (<I> + 1)
 	repeat 4
 
-	SetScreenElementProps Id = mods_text_0 rgba = [210 210 210 250]
+	SetScreenElementProps Id = mods_text_0 rgba = $menu_focus_color
 
     add_user_control_helper \{Text = 'SELECT'
 		button = Green
@@ -370,13 +370,13 @@ script menu_dx_mods_scroll_up
 	make_sound = 1
 	if ($mods_menu_index > 0)
 		FormatText ChecksumName = mods_text_id 'mods_text_%d' D = $mods_menu_index
-		SetScreenElementProps Id = <mods_text_id> rgba = [210 130 0 250]
+		SetScreenElementProps Id = <mods_text_id> rgba = $menu_unfocus_color
 
 		Change mods_menu_index = ($mods_menu_index - 1)
 		Change selected_modifier_index = ($selected_modifier_index - 1)
 
 		FormatText ChecksumName = mods_text_id 'mods_text_%d' D = $mods_menu_index
-		SetScreenElementProps Id = <mods_text_id> rgba = [210 210 210 250]
+		SetScreenElementProps Id = <mods_text_id> rgba = $menu_focus_color
 	else
 		if ($selected_modifier_index > 0)
 			Change selected_modifier_index = ($selected_modifier_index -1)
@@ -406,13 +406,13 @@ script menu_dx_mods_scroll_down
 	make_sound = 1
 	if ($mods_menu_index < 3)
 		FormatText ChecksumName = mods_text_id 'mods_text_%d' D = $mods_menu_index
-		SetScreenElementProps Id = <mods_text_id> rgba = [210 130 0 250]
+		SetScreenElementProps Id = <mods_text_id> rgba = $menu_unfocus_color
 
 		Change mods_menu_index = ($mods_menu_index + 1)
 		Change selected_modifier_index = ($selected_modifier_index + 1)
 
 		FormatText ChecksumName = mods_text_id 'mods_text_%d' D = $mods_menu_index
-		SetScreenElementProps Id = <mods_text_id> rgba = [210 210 210 250]
+		SetScreenElementProps Id = <mods_text_id> rgba = $menu_focus_color
 	else
 		if ($selected_modifier_index < ($mods_max_entries - 1))
 			Change selected_modifier_index = ($selected_modifier_index + 1)

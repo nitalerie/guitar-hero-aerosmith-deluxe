@@ -7,9 +7,9 @@ import argparse
 def main():
 
 	# change this depending on what game we're working with
-	game_name = "gh3"
+	game_name = "gha"
 	data_folder_name = "deluxe"
-	pak_file_name = "gh3dx"
+	pak_file_name = "ghadx"
 
 	# accept platform arg
 	parser = argparse.ArgumentParser(prog="configure")
@@ -35,7 +35,7 @@ def main():
 	# account for platform folder differences
 	match args.platform:
 		case "nylon":
-			pak_file_dir = os.path.join(out_dir, "nylon", "Mods", "GH3Deluxe", "pak")
+			pak_file_dir = os.path.join(out_dir, "nylon", "Mods", "GHADeluxe", "pak")
 		case "ps2":
 			pak_file_dir = os.path.join(out_dir, data_folder_name.lower())
 		case "wii":

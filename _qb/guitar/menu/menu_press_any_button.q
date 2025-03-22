@@ -9,10 +9,10 @@ script create_gh3dx_icon_toast
 		font = text_a6
 		Text = "DELUXE"
 		Dims = (500.0, 200.0)
-		Pos = (619.0, 350.0)
+		Pos = (625.0, 400.0)
 		just = [LEFT Top]
 		internal_just = [Center Top]
-		rgba = $deluxe_text_rgba
+		rgba = (($g_menu_colors).md_violet_grey)
 		Scale = 0.9
 		Shadow
         shadow_offs = (3.0, 3.0)
@@ -40,7 +40,7 @@ script create_gh3dx_version_toast
 		Scale = 0.6
 		Shadow
         shadow_offs = (3.0, 3.0)
-        shadow_rgba = $version_text_shadow_rgba
+        shadow_rgba = (($g_menu_colors).lt_violet_grey)
 	}
 endscript
 

@@ -86,23 +86,23 @@ main_menu_fs = {
 	]
 }
 
-main_menu_tip_pos_initial = (650.0, -590.0)
-main_menu_tip_pos_new = (650.0, -570.0)
-main_menu_tip_angle_initial = -10
-main_menu_tip_angle_new = -5
-main_menu_tip_scale_initial = 0.95
-main_menu_tip_scale_new = 0.85
+main_menu_tip_pos_initial = (975.0, 50.0)
+main_menu_tip_pos_new = (975.0, 30.0)
+main_menu_tip_angle_initial = 10
+main_menu_tip_angle_new = 5
+main_menu_tip_scale_initial = 0.50
+main_menu_tip_scale_new = 0.4
 main_menu_tip_animate_time = 1
 main_menu_tip_rgba = [190 225 255 250]
 main_menu_text_update_speed = 10
 main_menu_deluxe_text_dims = (500.0, 200.0)
-main_menu_deluxe_text_pos = (440.0, 290.0)
+main_menu_deluxe_text_pos = (870.0, 240.0)
 main_menu_deluxe_text_shadow_rgba = [0 0 0 255]
 
 menu_tips = [
 	"New and improved!"
 	"NeverHax welcomes you!"
-	"Also try Rock Band 3 Deluxe!"
+	"Also try Green Day Rock Band Redux!"
 	"Now With Blast Processing!"
 	"Arby's, we have The Meats!"
 	"THIS IS GUITAR HERO AEROSMITH!"
@@ -126,7 +126,7 @@ menu_tips = [
 	"removing guitar..."
 	"neverhax bad!"
 	"No More 40MB SecuROM Soon(TM)!"
-	"Nylon!"
+	"Nylon! Maybe"
 	"\\b4 \\b5 \\b6 \\b7 \\b8"
 	"Yet Another Deluxe Mod"
 	"If it ain't broke, don't fix it... this was kind of broke..."
@@ -134,19 +134,20 @@ menu_tips = [
 	"Is the strikeline... speakers?! WHAT ARE THEY?!"
 	"I got 99 problems and GHADX ain't one!"
 	"insert GHAPC is bad joke here"
-	"New Bret Micheals Mode!"
-	"Hold down a fret, wait 3-5 business days, done!"
+	"Tommy Tallarico is a fraudster!"
+	"Hold down a fret, wait 3-5 business days... wait I missed?"
 	"Look, we made a guitar game from a skate game!"
 	"Powered by Tony Hawk!"
-	"guitar hero"
+	"aerosmith"
 	"LESS GOOOOOOOO"
 	"Open source!"
 	"Fat free!"
 	"We love SecuROM!"
 	"Now With Denuvo Anti-Cheat!"
-	"We had infinite frontend before it was cool!"
+	"Infinite frontend never existed. You're all insane."
 	"Hatsune Miku Isn't In This One."
-	"Oops, all Kool Thing"
+	"Oops, all Joe Perry"
+	"thats cool but have you tried playing real guitar"
 	"patches.q - Do Not Use!"
 	"lysix.q - Do Not Use!"
 	"Random splash!"
@@ -253,847 +254,683 @@ script load_dx_settings
 	endif
 endscript
 
-script create_main_menu 
+script create_main_menu
 	load_dx_settings
 	set_home_button_allowed
+
+	resetscoreupdateready
 	GetGlobalTags \{user_options}
 	menu_audio_settings_update_guitar_volume vol = <guitar_volume>
 	menu_audio_settings_update_band_volume vol = <band_volume>
 	menu_audio_settings_update_sfx_volume vol = <sfx_volume>
-	SetSoundBussParams {Crowd = {vol = ($Default_BussSet.Crowd.vol)}}
-
+	setsoundbussparams {Crowd = {vol = ($default_BussSet.Crowd.vol)}}
 	if ($main_menu_movie_first_time = 0)
-		FadeToBlack \{ON
-			Time = 0
-			Alpha = 1.0
+		fadetoblack \{On
+			time = 0
+			alpha = 1.0
 			z_priority = 900}
 	endif
 	create_main_menu_backdrop
 	if ($main_menu_movie_first_time = 0 && $invite_controller = -1)
-		PlayMovieAndWait \{movie = 'gh3_intro'
-			noblack
-			noletterbox}
 		Change \{main_menu_movie_first_time = 1}
-		FadeToBlack \{OFF
-			Time = 0}
+		fadetoblack \{OFF
+			time = 0}
 	endif
-	
-
 	SetMenuAutoRepeatTimes \{(0.3, 0.05)}
 	kill_start_key_binding
 	UnPauseGame
-	Change \{check_for_unplugged_controllers = 1}
 	Change \{current_num_players = 1}
-	Change StructureName = player1_status controller = ($primary_controller)
+	Change structurename = player1_status controller = ($primary_controller)
 	Change \{player_controls_valid = 0}
 	disable_pause
-	SpawnScriptNow \{Menu_Music_On
-		Params = {
-			setflag = 1
-		}}
-	0xe5282627
+	SpawnScriptNow \{menu_music_on}
+	if ($is_demo_mode = 1)
+		demo_mode_disable = {rgba = [128 128 128 255] not_focusable}
+	else
+		demo_mode_disable = {}
+	endif
 	DeRegisterAtoms
-	RegisterAtoms \{Name = Achievement
+	RegisterAtoms \{Name = achievement
 		$Achievement_Atoms}
 	Change \{setlist_previous_tier = 1}
 	Change \{setlist_previous_song = 0}
 	Change \{setlist_previous_tab = tab_setlist}
-	Change \{current_song = welcometothejungle}
+	Change \{current_song = beyondbeautiful}
 	Change \{end_credits = 0}
 	Change \{battle_sudden_death = 0}
-	Change \{StructureName = player1_status
+	Change \{structurename = player1_status
 		character_id = Axel}
-	Change \{StructureName = player2_status
+	Change \{structurename = player2_status
 		character_id = Axel}
-	Change \{default_menu_focus_color = [
-			125
-			0
-			0
-			255
-		]}
-	Change \{default_menu_unfocus_color = $menu_text_color}
 	safe_create_gh3_pause_menu
-	base_menu_pos = (730.0, 90.0)
-	main_menu_font = fontgrid_title_gh3
-	new_menu scrollid = main_menu_scrolling_menu vmenuid = vmenu_main_menu use_backdrop = (0) Menu_pos = (<base_menu_pos>)
+	new_menu {
+		scrollid = main_menu_scrolling_menu
+		vmenuid = vmenu_main_menu
+		use_backdrop = 0
+		menu_pos = ($g_mm_base_menu_pos)
+		focus_color = dk_violet_red
+		unfocus_color = md_violet_grey
+		event_handlers = [
+			{pad_up generic_menu_up_or_down_sound params = {up}}
+			{pad_down generic_menu_up_or_down_sound params = {down}}
+		]
+	}
 	Change \{rich_presence_context = presence_main_menu}
-
-	if ((IsNGC) || (IsPS2))
-		career_text_off = (-30.0, 0.0)
-		career_text_scale = (2.0667, 1.9333)
-		coop_career_text_off = (<career_text_off> + (30.0, 75.0))
-		coop_career_text_scale = (1.0667, 1.2)
-		quickplay_text_off = (<coop_career_text_off> + (-35.0, 30.0))
-		quickplay_text_scale = (2.2, 2.0667)
-		multiplayer_text_off = (<quickplay_text_off> + (-40.0, 78.0))
-		multiplayer_text_scale = (1.6, 1.4667)
-		training_text_off = (<multiplayer_text_off> + (60.0, 42.0))
-		training_text_scale = (2.0, 2.0)
-		custom_menu_text_off = (<training_text_off> + (-60.0, 77.0))
-		custom_menu_text_scale = (1.4667, 1.333)
-		options_text_off = (<custom_menu_text_off> + (20.0, 48.0))
-		options_text_scale = (1.6, 1.4667)
-		leaderboards_text_off = (<options_text_off> + (25.0, 55.0))
-		leaderboards_text_scale = (1.4667, 1.333)
-		debug_menu_text_off = (<leaderboards_text_off> + (-30.0, 160.0))
-		debug_menu_text_scale = 1.0667
-	else
-		career_text_off = (-30.0, 0.0)
-		career_text_scale = (1.55, 1.4499999)
-		coop_career_text_off = (<career_text_off> + (30.0, 63.0))
-		coop_career_text_scale = (0.8, 0.9)
-		quickplay_text_off = (<coop_career_text_off> + (-35.0, 40.0))
-		quickplay_text_scale = (1.65, 1.55)
-		multiplayer_text_off = (<quickplay_text_off> + (-40.0, 65.0))
-		multiplayer_text_scale = (1.2, 1.1)
-		training_text_off = (<multiplayer_text_off> + (60.0, 47.0))
-		training_text_scale = (1.5, 1.5)
-		custom_menu_text_off = (<training_text_off> + (-60.0, 63.0))
-		custom_menu_text_scale = (1.1, 1.0)
-		options_text_off = (<custom_menu_text_off> + (20.0, 45.0))
-		options_text_scale = (1.2, 1.1)
-		leaderboards_text_off = (<options_text_off> + (20.0, 48.0))
-		leaderboards_text_scale = (1.1, 1.0)
-		exit_text_off = (<leaderboards_text_off> + (-20.0, 65.0))
-		exit_text_scale = (1.1, 1.0)
-		debug_menu_text_off = (<exit_text_off> + (0.0, 160.0))
-		debug_menu_text_scale = 0.8
-	endif
-
-	CreateScreenElement {
+	<text_x_scale> = 0.8
+	<text_y_scale> = 1.0
+	text_params = {
 		Type = TextElement
-		Id = main_menu_career_text
-		PARENT = main_menu_text_container
-		Text = 'CAREER'
-		font = <main_menu_font>
-		Pos = {(<career_text_off>) Relative}
-		Scale = (<career_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		font_spacing = 0
+		font = text_a5
+		Scale = ((<text_x_scale> * (1.0, 0.0)) + (<text_y_scale> * (0.0, 1.0)))
+		rgba = (($g_menu_colors).md_violet_grey)
 		Shadow
 		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
+		shadow_rgba = (($g_menu_colors).Block)
 		z_priority = 60
 	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 420)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((420.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = main_menu_coop_career_text
-		PARENT = main_menu_text_container
-		Text = 'CO-OP CAREER'
-		font = <main_menu_font>
-		Pos = {(<coop_career_text_off>) Relative}
-		Scale = (<coop_career_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		font_spacing = 0
-		Shadow
-		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 400)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((400.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = main_menu_quickplay_text
-		PARENT = main_menu_text_container
-		font = <main_menu_font>
-		Text = 'QUICKPLAY'
-		font_spacing = 0
-		Pos = {(<quickplay_text_off>) Relative}
-		Scale = (<quickplay_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		Shadow
-		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 400)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((400.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = main_menu_multiplayer_text
-		PARENT = main_menu_text_container
-		font = <main_menu_font>
-		Text = 'MULTIPLAYER'
-		font_spacing = 1
-		Pos = {(<multiplayer_text_off>) Relative}
-		Scale = (<multiplayer_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		Shadow
-		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 460)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((460.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = main_menu_training_text
-		PARENT = main_menu_text_container
-		font = <main_menu_font>
-		Text = 'TRAINING'
-		font_spacing = 0
-		Pos = {(<training_text_off>) Relative}
-		Scale = (<training_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		Shadow
-		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 345)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((345.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	GetScreenElementDims \{Id = main_menu_training_text}
-	old_height = <Height>
-	fit_text_in_rectangle Id = main_menu_training_text Dims = (350.0, 100.0) Pos = {(<training_text_off>) Relative} start_x_scale = (<training_text_scale>.(1.0, 0.0)) start_y_scale = (<training_text_scale>.(0.0, 1.0)) only_if_larger_x = 1 keep_ar = 1
-	GetScreenElementDims \{Id = main_menu_training_text}
-	Offset = ((<old_height> * ((<old_height> -24.0) / <old_height>)) - (<Height> * ((<Height> - (24.0 * ((1.0 * <Height>) / <old_height>))) / <Height>)))
-	leaderboards_text_off = (<leaderboards_text_off> - <Offset> * (0.0, 1.0))
-	options_text_off = (<options_text_off> - <Offset> * (0.0, 1.0))
-	if ((IsWinPort) || (IsMacPort))
-		createscreenelement {
-			type = textelement
-			id = main_menu_leaderboards_text
-			parent = main_menu_text_container
-			font = <main_menu_font>
-			text = "ONLINE"
-			font_spacing = 0
-			pos = {(<leaderboards_text_off>) relative}
-			scale = (<leaderboards_text_scale>)
-			rgba = ($menu_text_color)
-			just = [left top]
-			shadow
-			shadow_offs = (3.0, 3.0)
-			shadow_rgba = [0 0 0 255]
-			z_priority = 60
-		}
-		getscreenelementdims id = <id>
-		if (<width> > 360)
-			setscreenelementprops id = <id> scale = 1
-			fit_text_in_rectangle id = <id> dims = ((360.0, 0.0) + <height> * (0.0, 1.0))
-		endif
-	elseif IsXENON
-		CreateScreenElement {
-			Type = TextElement
-			Id = main_menu_leaderboards_text
-			PARENT = main_menu_text_container
-			font = <main_menu_font>
-			Text = 'XBOX LIVE'
-			font_spacing = 0
-			Pos = {(<leaderboards_text_off>) Relative}
-			Scale = (<leaderboards_text_scale>)
-			rgba = ($menu_text_color)
-			just = [LEFT Top]
-			Shadow
-			shadow_offs = (3.0, 3.0)
-			shadow_rgba = [0 0 0 255]
-			z_priority = 60
-		}
-		GetScreenElementDims Id = <Id>
-		if (<width> > 360)
-			SetScreenElementProps Id = <Id> Scale = 1
-			fit_text_in_rectangle Id = <Id> Dims = ((360.0, 0.0) + <Height> * (0.0, 1.0))
-		endif
-	elseif ISPS3
-		CreateScreenElement {
-			Type = TextElement
-			Id = main_menu_leaderboards_text
-			PARENT = main_menu_text_container
-			font = <main_menu_font>
-			Text = 'ONLINE'
-			font_spacing = 0
-			Pos = {(<leaderboards_text_off>) Relative}
-			Scale = (<leaderboards_text_scale>)
-			rgba = ($menu_text_color)
-			just = [LEFT Top]
-			Shadow
-			shadow_offs = (3.0, 3.0)
-			shadow_rgba = [0 0 0 255]
-			z_priority = 60
-		}
-		GetScreenElementDims Id = <Id>
-		if (<width> > 360)
-			SetScreenElementProps Id = <Id> Scale = 1
-			fit_text_in_rectangle Id = <Id> Dims = ((360.0, 0.0) + <Height> * (0.0, 1.0))
-		endif
-	elseif IsNGC
-		CreateScreenElement {
-			Type = TextElement
-			Id = main_menu_leaderboards_text
-			PARENT = main_menu_text_container
-			font = <main_menu_font>
-			Text = $wii_wifi
-			font_spacing = 4
-			Pos = {(<leaderboards_text_off>) Relative}
-			Scale = (<leaderboards_text_scale>)
-			rgba = ($menu_text_color)
-			just = [LEFT Top]
-			Shadow
-			shadow_offs = (3.0, 3.0)
-			shadow_rgba = [0 0 0 255]
-			z_priority = 60
-		}
-		GetScreenElementDims Id = <Id>
-		if (<width> > 360)
-			SetScreenElementProps Id = <Id> Scale = 1
-			fit_text_in_rectangle Id = <Id> Dims = ((360.0, 0.0) + <Height> * (0.0, 1.0))
-		endif
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = main_menu_custom_menu_text
-		PARENT = main_menu_text_container
-		font = <main_menu_font>
-		Text = 'DELUXE SETTINGS'
-		font_spacing = 0
-		Pos = {(<custom_menu_text_off>) Relative}
-		Scale = (<custom_menu_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		Shadow
-		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 420)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((420.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = main_menu_options_text
-		PARENT = main_menu_text_container
-		font = <main_menu_font>
-		Text = 'OPTIONS'
-		font_spacing = 0
-		Pos = {(<options_text_off>) Relative}
-		Scale = (<options_text_scale>)
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		Shadow
-		shadow_offs = (3.0, 3.0)
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
-	GetScreenElementDims Id = <Id>
-	if (<width> > 420)
-		SetScreenElementProps Id = <Id> Scale = 1
-		fit_text_in_rectangle Id = <Id> Dims = ((420.0, 0.0) + <Height> * (0.0, 1.0))
-	endif
-	if ((IsWinPort) || (IsMacPort))
-		createscreenelement {
-			type = textelement
-			id = main_menu_exit_text
-			parent = main_menu_text_container
-			font = <main_menu_font>
-			text = "EXIT"
-			font_spacing = 0
-			pos = {(<exit_text_off>) relative}
-			scale = (<exit_text_scale>)
-			rgba = ($menu_text_color)
-			just = [left top]
-			shadow
-			shadow_offs = (3.0, 3.0)
-			shadow_rgba = [0 0 0 255]
-			z_priority = 60
-		}
-		getscreenelementdims id = <id>
-		if (<width> > 420)
-			setscreenelementprops id = <id> scale = 1
-			fit_text_in_rectangle id = <id> dims = ((420.0, 0.0) + <height> * (0.0, 1.0))
-		endif
-	endif
-	if ($enable_button_cheats = 1)
-		CreateScreenElement {
-			Type = TextElement
-			Id = main_menu_debug_menu_text
-			PARENT = main_menu_text_container
-			font = <main_menu_font>
-			Text = 'DEBUG MENU'
-			Pos = {(<debug_menu_text_off>) Relative}
-			Scale = (<debug_menu_text_scale>)
-			rgba = ($menu_text_color)
-			just = [LEFT Top]
-			Shadow
-			shadow_offs = (3.0, 3.0)
-			shadow_rgba = [0 0 0 255]
-			z_priority = 60
-		}
-	endif
-	offwhite = [255 255 205 255]
-	hilite_off = (5.0, 0.0)
-	if ((IsNGC) || (IsPS2))
-		gm_hlInfoList = [
-			{
-				posL = (<career_text_off> + <hilite_off> + (-37.0, 16.0))
-				posR = (<career_text_off> + <hilite_off> + (235.0, 16.0))
-				beDims = (40.0, 40.0)
-				posH = (<career_text_off> + <hilite_off> + (-14.0, 25.0))
-				hDims = (248.0, 59.0)
-			} ,
-			{
-				posL = (<coop_career_text_off> + <hilite_off> + (-33.0, 2.0))
-				posR = (<coop_career_text_off> + <hilite_off> + (321.0, 2.0))
-				beDims = (32.0, 32.0)
-				posH = (<coop_career_text_off> + <hilite_off> + (-16.0, 14.0))
-				hDims = (335.0, 37.0)
-			} ,
-			{
-				posL = (<quickplay_text_off> + <hilite_off> + (-37.0, 6.0))
-				posR = (<quickplay_text_off> + <hilite_off> + (284.0, 6.0))
-				beDims = (40.0, 40.0)
-				posH = (<quickplay_text_off> + <hilite_off> + (-16.0, 27.0))
-				hDims = (295.0, 49.0)
-			} ,
-			{
-				posL = (<multiplayer_text_off> + <hilite_off> + (-37.0, 6.0))
-				posR = (<multiplayer_text_off> + <hilite_off> + (317.0, 6.0))
-				beDims = (38.0, 38.0)
-				posH = (<multiplayer_text_off> + <hilite_off> + (-18.0, 18.0))
-				hDims = (330.0, 46.0)
-			} ,
-			{
-				posL = (<training_text_off> + <hilite_off> + (-39.0, 17.0))
-				posR = (<training_text_off> + <hilite_off> + (313.0, 16.0))
-				beDims = (42.0, 42.0)
-				posH = (<training_text_off> + <hilite_off> + (-17.0, 26.0))
-				hDims = (328.0, 61.0)
-			} ,
-			{
-				posL = (<leaderboards_text_off> + <hilite_off> + (-33.0, 3.0) + (0.0, 19.0))
-				posR = (<leaderboards_text_off> + <hilite_off> + (148.0, 3.0) + (0.0, 19.0))
-				beDims = (34.0, 34.0)
-				posH = (<leaderboards_text_off> + <hilite_off> + (-13.0, -1.0) + (0.0, 16.0))
-				hDims = (330.0, 46.0)
-			} ,
-			{
-				posL = (<custom_menu_text_off> + <hilite_off> + (-36.0, 7.0))
-				posR = (<custom_menu_text_off> + <hilite_off> + (204.0, 7.0))
-				beDims = (36.0, 36.0)
-				posH = (<custom_menu_text_off> + <hilite_off> + (-16.0, 19.0))
-				hDims = (220.0, 45.0)
-			} ,
-			{
-				posL = (<options_text_off> + <hilite_off> + (-36.0, 7.0))
-				posR = (<options_text_off> + <hilite_off> + (204.0, 7.0))
-				beDims = (36.0, 36.0)
-				posH = (<options_text_off> + <hilite_off> + (-16.0, 19.0))
-				hDims = (220.0, 45.0)
-			} 
-		]
-	else
-		gm_hlInfoList = [
-			{
-				posL = (<career_text_off> + <hilite_off> + (-40.0, 9.0))
-				posR = (<career_text_off> + <hilite_off> + (218.0, 9.0))
-				beDims = (40.0, 40.0)
-				posH = (<career_text_off> + <hilite_off> + (-14.0, -2.0))
-				hDims = (240.0, 57.0)
-			} ,
-			{
-				posL = (<coop_career_text_off> + <hilite_off> + (-33.0, 3.0))
-				posR = (<coop_career_text_off> + <hilite_off> + (281.0, 3.0))
-				beDims = (32.0, 32.0)
-				posH = (<coop_career_text_off> + <hilite_off> + (-14.0, -1.0))
-				hDims = (300.0, 37.0)
-			} ,
-			{
-				posL = (<quickplay_text_off> + <hilite_off> + (-34.0, 4.0))
-				posR = (<quickplay_text_off> + <hilite_off> + (251.0, 4.0))
-				beDims = (40.0, 40.0)
-				posH = (<quickplay_text_off> + <hilite_off> + (-14.0, -2.0))
-				hDims = (267.0, 47.0)
-			} ,
-			{
-				posL = (<multiplayer_text_off> + <hilite_off> + (-37.0, 4.0))
-				posR = (<multiplayer_text_off> + <hilite_off> + (301.0, 4.0))
-				beDims = (38.0, 38.0)
-				posH = (<multiplayer_text_off> + <hilite_off> + (-14.0, -1.0))
-				hDims = (320.0, 43.0)
-			} ,
-			{
-				posL = (<training_text_off> + <hilite_off> + (-31.0, 9.0))
-				posR = (<training_text_off> + <hilite_off> + (282.0, 9.0))
-				beDims = (42.0, 42.0)
-				posH = (<training_text_off> + <hilite_off> + (-13.0, -2.0))
-				hDims = (295.0, 61.0)
-			} ,
-			{
-				posL = (<leaderboards_text_off> + <hilite_off> + (-33.0, 3.0))
-				posR = (<leaderboards_text_off> + <hilite_off> + (213.0, 3.0))
-				beDims = (34.0, 34.0)
-				posH = (<leaderboards_text_off> + <hilite_off> + (-13.0, -2.0))
-				hDims = (232.0, 40.0)
-			} ,
-			{
-				posL = (<custom_menu_text_off> + <hilite_off> + (-36.0, 5.0))
-				posR = (<custom_menu_text_off> + <hilite_off> + (183.0, 5.0))
-				beDims = (36.0, 36.0)
-				posH = (<custom_menu_text_off> + <hilite_off> + (-14.0, 0.0))
-				hDims = (205.0, 43.0)
-			} ,
-			{
-				posL = (<options_text_off> + <hilite_off> + (-36.0, 5.0))
-				posR = (<options_text_off> + <hilite_off> + (183.0, 5.0))
-				beDims = (36.0, 36.0)
-				posH = (<options_text_off> + <hilite_off> + (-14.0, 0.0))
-				hDims = (205.0, 43.0)
-			} ,
-			{
-				posl = (<exit_text_off> + <hilite_off> + (-36.0, 5.0))
-				posr = (<exit_text_off> + <hilite_off> + (183.0, 5.0))
-				bedims = (36.0, 36.0)
-				posh = (<exit_text_off> + <hilite_off> + (-12.0, 0.0))
-				hdims = (205.0, 43.0)
-			} 
-		]
-	endif
-	<gm_hlIndex> = 0
-	displaySprite {
-		PARENT = main_menu_text_container
-		tex = character_hub_hilite_bookend
-		Pos = ((<gm_hlInfoList> [<gm_hlIndex>]).posL)
-		Dims = ((<gm_hlInfoList> [<gm_hlIndex>]).beDims)
-		rgba = <offwhite>
-		Z = 2
-	}
-	<bookEnd1ID> = <Id>
-	displaySprite {
-		PARENT = main_menu_text_container
-		tex = character_hub_hilite_bookend
-		Pos = ((<gm_hlInfoList> [<gm_hlIndex>]).posR)
-		Dims = ((<gm_hlInfoList> [<gm_hlIndex>]).beDims)
-		rgba = <offwhite>
-		Z = 2
-	}
-	<bookEnd2ID> = <Id>
-	displaySprite {
-		PARENT = main_menu_text_container
-		Id = 0x3e2831d3
-		tex = White
-		rgba = <offwhite>
-		Pos = ((<gm_hlInfoList> [<gm_hlIndex>]).posH)
-		Dims = ((<gm_hlInfoList> [<gm_hlIndex>]).hDims)
-		Z = 2
-	}
-	<whiteTexHighlightID> = <Id>
-	CreateScreenElement {
-		Type = TextElement
-		PARENT = vmenu_main_menu
-		font = <main_menu_font>
-		Text = ''
+	<menu_offset> = (0.0, 45.0)
+	<hlbar_dims> = (240.0, 45.0)
+	<be_dims> = (32.0, 46.0)
+	<bel_pos> = ((((<hlbar_dims>.(-1.0, 0.0)) / 2) * (1.0, 0.0)) + (-16.0, 0.0))
+	<ber_pos> = ((((<hlbar_dims>.(1.0, 0.0)) / 2) * (1.0, 0.0)) + (16.0, 0.0))
+	mm_hilite_color = (($g_menu_colors).lt_plum)
+	CreateScreenElement \{Type = ContainerElement
+		id = main_menu_career
+		parent = vmenu_main_menu
 		event_handlers = [
-			{Focus retail_menu_focus Params = {Id = main_menu_career_text}}
-			{Focus SetScreenElementProps Params = {Id = main_menu_career_text no_shadow}}
-			{Focus guitar_menu_highlighter Params = {
-					hlIndex = 0
-					hlInfoList = <gm_hlInfoList>
-					be1ID = <bookEnd1ID>
-					be2ID = <bookEnd2ID>
-					wthlID = <whiteTexHighlightID>
-					text_id = main_menu_career_text
+			{
+				focus
+				main_menu_highlight
+				params = {
+					option = 'career'
 				}
 			}
-			{unfocus SetScreenElementProps Params = {Id = main_menu_career_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-			{unfocus retail_menu_unfocus Params = {Id = main_menu_career_text}}
-			{pad_choose main_menu_select_career}
-		]
-		z_priority = -1
-	}
-	CreateScreenElement {
-		Type = TextElement
-		PARENT = vmenu_main_menu
-		font = <main_menu_font>
-		Text = ''
-		event_handlers = [
-			{Focus retail_menu_focus Params = {Id = main_menu_coop_career_text}}
-			{Focus SetScreenElementProps Params = {Id = main_menu_coop_career_text no_shadow}}
-			{Focus guitar_menu_highlighter Params = {
-					hlIndex = 1
-					hlInfoList = <gm_hlInfoList>
-					be1ID = <bookEnd1ID>
-					be2ID = <bookEnd2ID>
-					wthlID = <whiteTexHighlightID>
-					text_id = main_menu_coop_career_text
+			{
+				unfocus
+				main_menu_unhighlight
+				params = {
+					option = 'career'
 				}
 			}
-			{unfocus SetScreenElementProps Params = {Id = main_menu_coop_career_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-			{unfocus retail_menu_unfocus Params = {Id = main_menu_coop_career_text}}
-			{pad_choose main_menu_select_coop_career}
-		]
-		z_priority = -1
+			{
+				pad_choose
+				main_menu_select_career
+			}
+		]}
+	CreateScreenElement {
+		<text_params>
+		parent = main_menu_career
+		id = main_menu_career_text
+		text = "CAREER"
+	}
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
+	}
+	CreateScreenElement \{Type = ContainerElement
+		id = main_menu_career_hl
+		Pos = (0.0, -8.0)
+		parent = main_menu_career
+		alpha = 0}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_career_hlbar
+		parent = main_menu_career_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
 	}
 	CreateScreenElement {
-		Type = TextElement
-		PARENT = vmenu_main_menu
-		font = <main_menu_font>
-		Text = ''
-		event_handlers = [
-			{Focus retail_menu_focus Params = {Id = main_menu_quickplay_text}}
-			{Focus SetScreenElementProps Params = {Id = main_menu_quickplay_text no_shadow}}
-			{Focus guitar_menu_highlighter Params = {
-					hlIndex = 2
-					hlInfoList = <gm_hlInfoList>
-					be1ID = <bookEnd1ID>
-					be2ID = <bookEnd2ID>
-					wthlID = <whiteTexHighlightID>
-					text_id = main_menu_quickplay_text
-				}
-			}
-			{unfocus SetScreenElementProps Params = {Id = main_menu_quickplay_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-			{unfocus retail_menu_unfocus Params = {Id = main_menu_quickplay_text}}
-			{pad_choose main_menu_select_quickplay}
-		]
-		z_priority = -1
+		Type = SpriteElement
+		id = main_menu_career_bel
+		parent = main_menu_career_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
 	}
 	CreateScreenElement {
-		Type = TextElement
-		PARENT = vmenu_main_menu
-		font = <main_menu_font>
-		Text = ''
+		Type = SpriteElement
+		id = main_menu_career_ber
+		parent = main_menu_career_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_career_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+	CreateScreenElement \{Type = ContainerElement
+		id = main_menu_quickplay
+		parent = vmenu_main_menu
 		event_handlers = [
-			{Focus retail_menu_focus Params = {Id = main_menu_multiplayer_text}}
-			{Focus SetScreenElementProps Params = {Id = main_menu_multiplayer_text no_shadow}}
-			{Focus guitar_menu_highlighter Params = {
-					hlIndex = 3
-					hlInfoList = <gm_hlInfoList>
-					be1ID = <bookEnd1ID>
-					be2ID = <bookEnd2ID>
-					wthlID = <whiteTexHighlightID>
-					text_id = main_menu_multiplayer_text
+			{
+				focus
+				main_menu_highlight
+				params = {
+					option = 'quickplay'
 				}
 			}
-			{unfocus SetScreenElementProps Params = {Id = main_menu_multiplayer_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-			{unfocus retail_menu_unfocus Params = {Id = main_menu_multiplayer_text}}
-			{pad_choose main_menu_select_multiplayer}
-		]
-		z_priority = -1
+			{
+				unfocus
+				main_menu_unhighlight
+				params = {
+					option = 'quickplay'
+				}
+			}
+			{
+				pad_choose
+				main_menu_select_quickplay
+			}
+		]}
+	CreateScreenElement {
+		<text_params>
+		parent = main_menu_quickplay
+		id = main_menu_quickplay_text
+		Pos = (<menu_offset>)
+		text = "QUICKPLAY"
+	}
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
 	}
 	CreateScreenElement {
-		Type = TextElement
-		PARENT = vmenu_main_menu
-		font = <main_menu_font>
-		Text = ''
+		Type = ContainerElement
+		id = main_menu_quickplay_hl
+		parent = main_menu_career
+		Pos = (<menu_offset> + (0.0, -8.0))
+		alpha = 0
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_quickplay_hlbar
+		parent = main_menu_quickplay_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_quickplay_bel
+		parent = main_menu_quickplay_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_quickplay_ber
+		parent = main_menu_quickplay_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_quickplay_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+	CreateScreenElement \{Type = ContainerElement
+		id = main_menu_multiplayer
+		parent = vmenu_main_menu
 		event_handlers = [
-			{Focus retail_menu_focus Params = {Id = main_menu_training_text}}
-			{Focus SetScreenElementProps Params = {Id = main_menu_training_text no_shadow}}
-			{Focus guitar_menu_highlighter Params = {
-					hlIndex = 4
-					hlInfoList = <gm_hlInfoList>
-					be1ID = <bookEnd1ID>
-					be2ID = <bookEnd2ID>
-					wthlID = <whiteTexHighlightID>
-					text_id = main_menu_training_text
+			{
+				focus
+				main_menu_highlight
+				params = {
+					option = 'multiplayer'
 				}
 			}
-			{unfocus SetScreenElementProps Params = {Id = main_menu_training_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-			{unfocus retail_menu_unfocus Params = {Id = main_menu_training_text}}
+			{
+				unfocus
+				main_menu_unhighlight
+				params = {
+					option = 'multiplayer'
+				}
+			}
+			{
+				pad_choose
+				main_menu_select_multiplayer
+			}
+		]}
+	CreateScreenElement {
+		<text_params>
+		parent = main_menu_multiplayer
+		id = main_menu_multiplayer_text
+		Pos = (<menu_offset> * 2)
+		text = "MULTIPLAYER"
+	}
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
+	}
+	CreateScreenElement {
+		Type = ContainerElement
+		id = main_menu_multiplayer_hl
+		parent = main_menu_career
+		Pos = ((<menu_offset> * 2) + (0.0, -8.0))
+		alpha = 0
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_multiplayer_hlbar
+		parent = main_menu_multiplayer_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_multiplayer_bel
+		parent = main_menu_multiplayer_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_multiplayer_ber
+		parent = main_menu_multiplayer_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_multiplayer_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+	CreateScreenElement {
+		Type = ContainerElement
+		id = main_menu_training
+		parent = vmenu_main_menu
+		event_handlers = [
+			{focus main_menu_highlight params = {option = 'training'}}
+			{unfocus main_menu_unhighlight params = {option = 'training'}}
 			{pad_choose main_menu_select_training}
 		]
-		z_priority = -1
+		<demo_mode_disable>
 	}
 	CreateScreenElement {
-			Type = TextElement
-			PARENT = vmenu_main_menu
-			font = <main_menu_font>
-			Text = ''
-			event_handlers = [
-				{Focus retail_menu_focus Params = {Id = main_menu_custom_menu_text}}
-				{Focus SetScreenElementProps Params = {Id = main_menu_custom_menu_text no_shadow}}
-					{Focus guitar_menu_highlighter Params = {
-						hlIndex = 6
-						hlInfoList = <gm_hlInfoList>
-						be1ID = <bookEnd1ID>
-						be2ID = <bookEnd2ID>
-						wthlID = <whiteTexHighlightID>
-						text_id = main_menu_custom_menu_text
-					}
-				}
-				{unfocus SetScreenElementProps Params = {Id = main_menu_custom_menu_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-				{unfocus retail_menu_unfocus Params = {Id = main_menu_custom_menu_text}}
-				{pad_choose ui_flow_manager_respond_to_action Params = {action = select_custom_menu}}
-			]
-			z_priority = -1
-		}
+		<text_params>
+		parent = main_menu_training
+		id = main_menu_training_text
+		Pos = (<menu_offset> * 3)
+		text = "TRAINING"
+	}
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
+	}
 	CreateScreenElement {
-		Type = TextElement
-		PARENT = vmenu_main_menu
-		font = <main_menu_font>
-		Text = ''
+		Type = ContainerElement
+		id = main_menu_training_hl
+		parent = main_menu_career
+		Pos = ((<menu_offset> * 3) + (0.0, -8.0))
+		alpha = 0
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_training_hlbar
+		parent = main_menu_training_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_training_bel
+		parent = main_menu_training_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_training_ber
+		parent = main_menu_training_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_training_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+	CreateScreenElement {
+		Type = ContainerElement
+		id = main_menu_leaderboards
+		parent = vmenu_main_menu
 		event_handlers = [
-			{Focus retail_menu_focus Params = {Id = main_menu_options_text}}
-			{Focus SetScreenElementProps Params = {Id = main_menu_options_text no_shadow}}
-			{Focus guitar_menu_highlighter Params = {
-					hlIndex = 7
-					hlInfoList = <gm_hlInfoList>
-					be1ID = <bookEnd1ID>
-					be2ID = <bookEnd2ID>
-					wthlID = <whiteTexHighlightID>
-					text_id = main_menu_options_text
+			{focus main_menu_highlight params = {option = 'leaderboards'}}
+			{unfocus main_menu_unhighlight params = {option = 'leaderboards'}}
+			{pad_choose main_menu_select_xbox_live}
+		]
+		<demo_mode_disable>
+	}
+	if isXenon
+		CreateScreenElement {
+			<text_params>
+			parent = main_menu_leaderboards
+			id = main_menu_leaderboards_text
+			Pos = (<menu_offset> * 4)
+			text = "Xbox LIVE"
+		}
+	else
+		CreateScreenElement {
+			<text_params>
+			parent = main_menu_leaderboards
+			id = main_menu_leaderboards_text
+			Pos = (<menu_offset> * 4)
+			text = "ONLINE"
+		}
+	endif
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
+	}
+	CreateScreenElement {
+		Type = ContainerElement
+		id = main_menu_leaderboards_hl
+		parent = main_menu_career
+		Pos = ((<menu_offset> * 4) + (0.0, -8.0))
+		alpha = 0
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_leaderboards_hlbar
+		parent = main_menu_leaderboards_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_leaderboards_bel
+		parent = main_menu_leaderboards_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_leaderboards_ber
+		parent = main_menu_leaderboards_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_leaderboards_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+	CreateScreenElement \{Type = ContainerElement
+		id = main_menu_options
+		parent = vmenu_main_menu
+		event_handlers = [
+			{
+				focus
+				main_menu_highlight
+				params = {
+					option = 'options'
 				}
 			}
-			{unfocus SetScreenElementProps Params = {Id = main_menu_options_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-			{unfocus retail_menu_unfocus Params = {Id = main_menu_options_text}}
-			{pad_choose main_menu_select_options}
-		]
-		z_priority = -1
+			{
+				unfocus
+				main_menu_unhighlight
+				params = {
+					option = 'options'
+				}
+			}
+			{
+				pad_choose
+				main_menu_select_options
+			}
+		]}
+	CreateScreenElement {
+		<text_params>
+		parent = main_menu_options
+		id = main_menu_options_text
+		Pos = (<menu_offset> * 5)
+		text = "OPTIONS"
 	}
-	if ((IsWinPort) || (IsMacPort))
-		CreateScreenElement {
-			type = textelement
-			parent = vmenu_main_menu
-			font = <main_menu_font>
-			text = ""
-			event_handlers = [
-				{focus retail_menu_focus params = {id = main_menu_leaderboards_text}}
-				{focus setscreenelementprops params = {id = main_menu_leaderboards_text no_shadow}}
-				{focus guitar_menu_highlighter params = {
-						hlindex = 5
-						hlinfolist = <gm_hlinfolist>
-						be1id = <bookend1id>
-						be2id = <bookend2id>
-						wthlid = <whitetexhighlightid>
-						text_id = main_menu_leaderboards_text
-					}
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
+	}
+	CreateScreenElement {
+		Type = ContainerElement
+		id = main_menu_options_hl
+		parent = main_menu_career
+		Pos = ((<menu_offset> * 5) + (0.0, -8.0))
+		alpha = 0
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_options_hlbar
+		parent = main_menu_options_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_options_bel
+		parent = main_menu_options_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_options_ber
+		parent = main_menu_options_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_options_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+
+	CreateScreenElement \{Type = ContainerElement
+		id = main_menu_deluxe
+		parent = vmenu_main_menu
+		event_handlers = [
+			{
+				focus
+				main_menu_highlight
+				params = {
+					option = 'deluxe'
 				}
-				{unfocus setscreenelementprops params = {id = main_menu_leaderboards_text shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-				{unfocus retail_menu_unfocus params = {id = main_menu_leaderboards_text}}
-				{pad_choose main_menu_select_winport_online}
-			]
-			z_priority = -1
-		}
-	elseif ((IsXENON) || (IsPS3) || (IsNGC))
-		CreateScreenElement {
-			Type = TextElement
-			PARENT = vmenu_main_menu
-			font = <main_menu_font>
-			Text = ''
-			event_handlers = [
-				{Focus retail_menu_focus Params = {Id = main_menu_leaderboards_text}}
-				{Focus SetScreenElementProps Params = {Id = main_menu_leaderboards_text no_shadow}}
-				{Focus guitar_menu_highlighter Params = {
-						hlIndex = 5
-						hlInfoList = <gm_hlInfoList>
-						be1ID = <bookEnd1ID>
-						be2ID = <bookEnd2ID>
-						wthlID = <whiteTexHighlightID>
-						text_id = main_menu_leaderboards_text
-					}
+			}
+			{
+				unfocus
+				main_menu_unhighlight
+				params = {
+					option = 'deluxe'
 				}
-				{unfocus SetScreenElementProps Params = {Id = main_menu_leaderboards_text Shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-				{unfocus retail_menu_unfocus Params = {Id = main_menu_leaderboards_text}}
-				{pad_choose main_menu_select_xbox_live}
-			]
-			z_priority = -1
-		}
-	endif
-	if ((IsWinPort) || (IsMacPort))
-		createscreenelement {
-			type = textelement
-			parent = vmenu_main_menu
-			font = <main_menu_font>
-			text = ''
-			event_handlers = [
-				{focus retail_menu_focus params = {id = main_menu_exit_text}}
-				{focus setscreenelementprops params = {id = main_menu_exit_text no_shadow}}
-				{focus guitar_menu_highlighter params = {
-						hlindex = 8
-						hlinfolist = <gm_hlinfolist>
-						be1id = <bookend1id>
-						be2id = <bookend2id>
-						wthlid = <whitetexhighlightid>
-						text_id = main_menu_exit_text
-					}
+			}
+			{
+				pad_choose
+				ui_flow_manager_respond_to_action
+				params = {
+					action = select_custom_menu
 				}
-				{unfocus setscreenelementprops params = {id = main_menu_exit_text shadow shadow_offs = (3.0, 3.0) shadow_rgba = [0 0 0 255]}}
-				{unfocus retail_menu_unfocus params = {id = main_menu_exit_text}}
-				{pad_choose main_menu_select_exit}
-			]
-			z_priority = -1
-		}
-	endif
+			}
+		]}
+	CreateScreenElement {
+		<text_params>
+		parent = main_menu_deluxe
+		id = main_menu_deluxe_text
+		Pos = (<menu_offset> * 6)
+		text = "DELUXE SETTINGS"
+	}
+	GetScreenElementDims id = <id>
+	fit_text_in_rectangle {
+		id = <id>
+		dims = ((<height> * (0.0, 1.0)) + (($g_mm_menu_max_width) * (1.0, 0.0)))
+		only_if_larger_x = 1
+		start_x_scale = <text_x_scale>
+		start_y_scale = <text_y_scale>
+	}
+	CreateScreenElement {
+		Type = ContainerElement
+		id = main_menu_deluxe_hl
+		parent = main_menu_career
+		Pos = ((<menu_offset> * 6) + (0.0, -8.0))
+		alpha = 0
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_deluxe_hlbar
+		parent = main_menu_deluxe_hl
+		texture = hilite_bar_01
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <hlbar_dims>
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_deluxe_bel
+		parent = main_menu_deluxe_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <bel_pos>
+		flip_v
+	}
+	CreateScreenElement {
+		Type = SpriteElement
+		id = main_menu_deluxe_ber
+		parent = main_menu_deluxe_hl
+		texture = character_hub_hilite_bookend
+		rgba = <mm_hilite_color>
+		alpha = 1
+		dims = <be_dims>
+		Pos = <ber_pos>
+	}
+	DoScreenElementMorph \{id = main_menu_deluxe_hl
+		Scale = (1.0, 0.01)
+		relative_scale}
+
 	if ($enable_button_cheats = 1)
-		CreateScreenElement {
-			Type = TextElement
-			PARENT = vmenu_main_menu
-			font = <main_menu_font>
-			Text = ''
+		CreateScreenElement \{Type = ContainerElement
+			id = main_menu_debug_menu
+			parent = vmenu_main_menu
 			event_handlers = [
-				{Focus retail_menu_focus Params = {Id = main_menu_debug_menu_text}}
-				{Focus guitar_menu_highlighter Params = {
-						zPri = -2
-						hlIndex = 0
-						hlInfoList = <gm_hlInfoList>
-						be1ID = <bookEnd1ID>
-						be2ID = <bookEnd2ID>
-						wthlID = <whiteTexHighlightID>
+				{
+					focus
+					main_menu_highlight
+					params = {
+						option = 'debug_menu'
 					}
 				}
-				{unfocus retail_menu_unfocus Params = {Id = main_menu_debug_menu_text}}
-				{pad_choose ui_flow_manager_respond_to_action Params = {action = select_debug_menu}}
-			]
-			z_priority = -1
+				{
+					unfocus
+					main_menu_unhighlight
+					params = {
+						option = 'debug_menu'
+					}
+				}
+				{
+					pad_choose
+					ui_flow_manager_respond_to_action
+					params = {
+						action = select_debug_menu
+					}
+				}
+			]}
+		CreateScreenElement {
+			<text_params>
+			Scale = (0.5, 0.5)
+			parent = main_menu_debug_menu
+			id = main_menu_debug_menu_text
+			Pos = (<menu_offset> * 7)
+			text = "DEBUG MENU"
 		}
 	endif
-
-	if ($new_message_of_the_day = 1)
-		SpawnScriptNow \{pop_in_new_downloads_notifier}
-	endif
-
-	if ((ISPS3) || (IsXENON)) 
-		Change \{user_control_pill_text_color = [
+	Change \{user_control_pill_text_color = [
 			0
 			0
 			0
 			255
 		]}
-		Change \{user_control_pill_color = [
+	Change \{user_control_pill_color = [
 			180
 			180
 			180
 			255
 		]}
-	endif
-
-	add_user_control_helper \{Text = 'SELECT'
-		button = Green
-		Z = 100}
-	add_user_control_helper \{Text = 'UP/DOWN'
-		button = Strumbar
-		Z = 100}
+	add_user_control_helper \{text = "SELECT"
+		button = green
+		z = 100}
+	add_user_control_helper \{text = "UP/DOWN"
+		button = strumbar
+		z = 100}
 	if NOT ($invite_controller = -1)
 		Change \{invite_controller = -1}
 		ui_flow_manager_respond_to_action \{action = select_xbox_live}
-		FadeToBlack \{OFF
-			Time = 0}
+		fadetoblack \{OFF
+			time = 0}
 	else
-		LaunchEvent \{Type = Focus
-			Target = vmenu_main_menu}
+		LaunchEvent \{Type = focus
+			target = vmenu_main_menu}
 	endif
-	0x5c83e977
 endscript
 
 script create_pause_menu \{Player = 1
@@ -1194,7 +1031,7 @@ script create_pause_menu \{Player = 1
 		font = text_a6
 		Pos = <pause_player_pos>
 		Scale = <pause_player_scale>
-		rgba = [170 90 30 255]
+		rgba = (($g_menu_colors).black)
 		Scale = 0.8
 	}
 	text_scale = (0.9, 0.9)
@@ -1276,7 +1113,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = ($menu_unfocus_color)
 				Id = pause_resume
 				Text = 'RESUME'
 				just = [Center Top]
@@ -1301,7 +1138,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'RESTART'
 				Id = pause_restart
 				just = [Center Top]
@@ -1326,7 +1163,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'OPTIONS'
 				Id = pause_options
 				just = [Center Top]
@@ -1351,7 +1188,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'CHANGE SPEED'
 				Id = pause_change_speed
 				just = [Center Top]
@@ -1376,7 +1213,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'CHANGE SECTION'
 				Id = pause_change_section
 				just = [Center Top]
@@ -1402,7 +1239,7 @@ script create_pause_menu \{Player = 1
 					PARENT = <Id>
 					font = fontgrid_title_gh3
 					Scale = <text_scale>
-					rgba = [210 130 0 250]
+					rgba = $menu_unfocus_color
 					Text = 'NEW SONG'
 					Id = pause_new_song
 					just = [Center Top]
@@ -1428,7 +1265,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'QUIT'
 				Id = pause_quit
 				just = [Center Top]
@@ -1465,7 +1302,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'RESUME'
 				Id = pause_resume
 				just = [Center Top]
@@ -1496,7 +1333,7 @@ script create_pause_menu \{Player = 1
 						PARENT = <Id>
 						font = fontgrid_title_gh3
 						Scale = <text_scale>
-						rgba = [210 130 0 250]
+						rgba = $menu_unfocus_color
 						Text = 'RESTART'
 						Id = pause_restart
 						just = [Center Top]
@@ -1522,7 +1359,7 @@ script create_pause_menu \{Player = 1
 							PARENT = <Id>
 							font = fontgrid_title_gh3
 							Scale = <text_scale>
-							rgba = [210 130 0 250]
+							rgba = $menu_unfocus_color
 							Text = 'PRACTICE'
 							Id = pause_practice
 							just = [Center Top]
@@ -1548,7 +1385,7 @@ script create_pause_menu \{Player = 1
 						PARENT = <Id>
 						font = fontgrid_title_gh3
 						Scale = <text_scale>
-						rgba = [210 130 0 250]
+						rgba = $menu_unfocus_color
 						Text = 'OPTIONS'
 						Id = pause_options
 						just = [Center Top]
@@ -1586,7 +1423,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'QUIT'
 				Id = pause_quit
 				just = [Center Top]
@@ -1616,7 +1453,7 @@ script create_pause_menu \{Player = 1
 					PARENT = <Id>
 					font = fontgrid_title_gh3
 					Scale = <text_scale>
-					rgba = [210 130 0 250]
+					rgba = $menu_unfocus_color
 					Text = 'DEBUG MENU'
 					Id = pause_debug_menu
 					just = [Center Top]
@@ -1652,7 +1489,7 @@ script create_pause_menu \{Player = 1
 			PARENT = <Id>
 			font = fontgrid_title_gh3
 			Scale = <text_scale>
-			rgba = [210 130 0 250]
+			rgba = $menu_unfocus_color
 			Text = 'SET AUDIO'
 			Id = options_audio
 			just = [Center Center]
@@ -1681,7 +1518,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'CALIBRATE VIDEO LAG'
 				Id = options_calibrate_lag
 				just = [Center Center]
@@ -1709,7 +1546,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'CALIBRATE AUDIO LAG'
 				Id = 0x06c938f2
 				just = [Center Center]
@@ -1738,7 +1575,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'CALIBRATE LAG'
 				Id = options_calibrate_lag
 				just = [Center Center]
@@ -1768,7 +1605,7 @@ script create_pause_menu \{Player = 1
 				PARENT = <Id>
 				font = fontgrid_title_gh3
 				Scale = <text_scale>
-				rgba = [210 130 0 250]
+				rgba = $menu_unfocus_color
 				Text = 'CALIBRATE WHAMMY'
 				Id = options_calibrate_whammy
 				just = [Center Center]
@@ -1808,7 +1645,7 @@ script create_pause_menu \{Player = 1
 			Id = pause_options_lefty
 			font = fontgrid_title_gh3
 			Scale = <text_scale>
-			rgba = [210 130 0 250]
+			rgba = $menu_unfocus_color
 			Text = <lefty_flip_text>
 			just = [Center Center]
 			Shadow
@@ -1835,7 +1672,7 @@ script create_pause_menu \{Player = 1
 			PARENT = <Id>
 			font = fontgrid_title_gh3
 			Scale = <text_scale>
-			rgba = [210 130 0 250]
+			rgba = $menu_unfocus_color
 			Text = 'DELUXE SETTINGS'
 			Id = options_deluxe
 			just = [Center Center]
@@ -1939,178 +1776,90 @@ script issingleplayergame
 	endif
 endscript
 
-script create_main_menu_backdrop 
+script create_main_menu_backdrop
+shut_down_character_hub
 	create_menu_backdrop \{texture = GH3_Main_Menu_BG}
-	base_menu_pos = (730.0, 90.0)
 	CreateScreenElement {
 		Type = ContainerElement
-		Id = main_menu_text_container
-		PARENT = root_window
-		Pos = (<base_menu_pos>)
-		just = [LEFT Top]
+		id = main_menu_text_container
+		parent = root_window
+		Pos = ($g_mm_base_menu_pos)
+		just = [left top]
 		z_priority = 3
-		Scale = 0.8
 	}
 	CreateScreenElement \{Type = ContainerElement
-		Id = main_menu_bg_container
-		PARENT = root_window
+		id = main_menu_bg_container
+		parent = root_window
 		Pos = (0.0, 0.0)
 		z_priority = 3}
 	CreateScreenElement \{Type = SpriteElement
-		Id = Main_Menu_BG2
-		PARENT = main_menu_bg_container
+		id = main_menu_godrays1
+		parent = main_menu_bg_container
 		texture = Main_Menu_BG2
-		Pos = (335.0, 0.0)
-		Dims = (720.0, 720.0)
+		Pos = (400.0, 330.0)
+		dims = (1280.0, 1280.0)
 		just = [
-			LEFT
-			Top
+			center
+			center
 		]
-		z_priority = 1}
-	RunScriptOnScreenElement Id = Main_Menu_BG2 glow_menu_element Params = {Time = 1 Id = <Id>}
+		z_priority = 1
+		alpha = 0
+		blend = add}
+	RunScriptOnScreenElement id = <id> rotate_menu_element params = {time = 30 id = <id>}
 	CreateScreenElement \{Type = SpriteElement
-		PARENT = main_menu_bg_container
-		texture = Main_Menu_illustrations
-		Pos = (0.0, 0.0)
-		Dims = (1280.0, 720.0)
+		id = main_menu_godrays2
+		parent = main_menu_bg_container
+		texture = Main_Menu_BG2
+		Pos = (400.0, 330.0)
+		dims = (1280.0, 1280.0)
 		just = [
-			LEFT
-			Top
+			center
+			center
+		]
+		z_priority = 1
+		alpha = 0
+		blend = add
+		flip_v}
+	RunScriptOnScreenElement id = <id> rotate_menu_element params = {time = 60 id = <id>}
+	CreateScreenElement \{Type = SpriteElement
+		parent = main_menu_bg_container
+		texture = Main_Menu_illustrations
+		Pos = (55.0, 0.0)
+		dims = (720.0, 720.0)
+		just = [
+			left
+			top
+		]
+		z_priority = 2
+		alpha = 0.9}
+	CreateScreenElement \{Type = SpriteElement
+		parent = main_menu_bg_container
+		texture = main_menu_logo
+		Pos = (870.0, 50.0)
+		Scale = 1
+		just = [
+			center
+			top
 		]
 		z_priority = 2}
-	CreateScreenElement \{Type = SpriteElement
-		Id = eyes_BL
-		PARENT = main_menu_bg_container
-		texture = Main_Menu_eyesBL
-		Pos = (93.0, 676.0)
-		Dims = (128.0, 64.0)
-		just = [
-			Center
-			Center
-		]
-		z_priority = 3}
-	RunScriptOnScreenElement Id = eyes_BL glow_menu_element Params = {Time = 1.0 Id = <Id>}
-	CreateScreenElement \{Type = SpriteElement
-		Id = eyes_BR
-		PARENT = main_menu_bg_container
-		texture = Main_Menu_eyesBR
-		Pos = (1176.0, 659.0)
-		Dims = (128.0, 64.0)
-		just = [
-			Center
-			Center
-		]
-		z_priority = 3}
-	RunScriptOnScreenElement Id = eyes_BR glow_menu_element Params = {Time = 1.0 Id = <Id>}
-	CreateScreenElement \{Type = SpriteElement
-		Id = eyes_C
-		PARENT = main_menu_bg_container
-		texture = Main_Menu_eyesC
-		Pos = (406.0, 398.0)
-		Dims = (128.0, 64.0)
-		just = [
-			Center
-			Center
-		]
-		z_priority = 3}
-	RunScriptOnScreenElement Id = eyes_C glow_menu_element Params = {Time = 1.5 Id = <Id>}
-	CreateScreenElement \{Type = SpriteElement
-		Id = eyes_TL
-		PARENT = main_menu_bg_container
-		texture = Main_Menu_eyesTL
-		Pos = (271.0, 215.0)
-		Dims = (128.0, 64.0)
-		just = [
-			Center
-			Center
-		]
-		z_priority = 3}
-	RunScriptOnScreenElement Id = eyes_TL glow_menu_element Params = {Time = 1.7 Id = <Id>}
-	CreateScreenElement \{Type = SpriteElement
-		Id = eyes_TR
-		PARENT = main_menu_bg_container
-		texture = Main_Menu_eyesTR
-		Pos = (995.0, 71.0)
-		Dims = (128.0, 64.0)
-		just = [
-			Center
-			Center
-		]
-		z_priority = 3}
-	RunScriptOnScreenElement Id = eyes_TR glow_menu_element Params = {Time = 1.0 Id = <Id>}
+
 	main_menu_font = fontgrid_title_gh3
-	GetPlatform
-	; set version based on return value from GetPlatform
-	switch (<Platform>)
-		case PS3
-			FormatText TextName = version "%v%p" V = $gh3dx_version P = "-ps3"
-			version_pos = (160.0, 600.0)
-			version_shadow_offs = (3.0, 3.0)
-			version_scale = (0.5, 0.5)
-		case XENON
-		 	FormatText TextName = version "%v%p" V = $gh3dx_version P = "-xbox"
-		 	version_pos = (160.0, 600.0)
-		 	version_shadow_offs = (3.0, 3.0)
-		 	version_scale = (0.5, 0.5)
-		case NGC
-			FormatText TextName = version "%v%p" V = $gh3dx_version P = "-wii"
-			version_pos = (130.0, 600.0)
-			version_shadow_offs = (1.5, 1.5)
-			version_scale = (0.7, 0.7)
-		case PS2
-			FormatText TextName = version "%v%p" V = $gh3dx_version P = "-ps2"
-			version_pos = (130.0, 600.0)
-			version_shadow_offs = (1.5, 1.5)
-			version_scale = (0.7, 0.7)
-	endswitch
-	; GetPlatform returns XENON on both PC and Mac, so we must have a dedicated if block for those plats.
-	if IsWinPort
-		0xce6c989e
-		FormatText TextName = version "VERSION %s (%v%p)" S = <0x112c650d> V = $gh3dx_version P = "-pc"
-		version_pos = (160.0, 600.0)
-		version_shadow_offs = (3.0, 3.0)
-		version_scale = (0.5, 0.5)
-	elseif IsMacPort
-		0xce6c989e
-		FormatText TextName = version "VERSION %s (%v%p)" S = <0x112c650d> V = $gh3dx_version P = "-mac"
-		version_pos = (160.0, 600.0)
-		version_shadow_offs = (3.0, 3.0)
-		version_scale = (0.5, 0.5)
-	endif
-	CreateScreenElement {
-		Type = TextElement
-		Id = version_text
-		PARENT = main_menu_bg_container
-		Text = <version>
-		font = fontgrid_title_gh3
-		Pos = <version_pos>
-		Scale = <version_scale>
-		rgba = ($menu_text_color)
-		just = [LEFT Top]
-		font_spacing = 0
-		Shadow
-		shadow_offs = <version_shadow_offs>
-		shadow_rgba = [0 0 0 255]
-		z_priority = 60
-	}
 
 	CreateScreenElement {
 		Type = TextBlockElement
 		Id = main_menu_tip
-		PARENT = <Id>
+		PARENT = main_menu_bg_container
+		font = text_a6
 		Text = ""
-		font = text_a4
-		Pos = ($main_menu_tip_pos_initial)
-		Scale = ($main_menu_tip_scale_initial)
 		Dims = (600.0, 200.0)
-		rgba = ($main_menu_tip_rgba)
+		Pos = $main_menu_tip_pos_initial
 		just = [Center Top]
-		font_spacing = 0
+		rgba = $main_menu_tip_rgba
+		Scale = $main_menu_tip_scale_initial
 		Shadow
-		shadow_offs = (1.5, 1.5)
-		shadow_rgba = [0 0 0 255]
+        shadow_offs = (1.5, 1.5)
+        shadow_rgba = [0 0 0 255]
 		z_priority = 62
-		allow_expansion
 	}
 
 	RunScriptOnScreenElement \{Id = main_menu_tip
@@ -2128,12 +1877,14 @@ script create_main_menu_backdrop
 		Dims = $main_menu_deluxe_text_dims
 		Pos = $main_menu_deluxe_text_pos
 		just = [Center Top]
-		internal_just = [Center Top]
-		rgba = $deluxe_text_rgba
-		Scale = 0.9
+		rgba = (($g_menu_colors).md_violet_grey)
+		Scale = 0.75
 		Shadow
         shadow_offs = (3.0, 3.0)
         shadow_rgba = $main_menu_deluxe_text_shadow_rgba
 		z_priority = 61
 	}
+
+	
+	
 endscript
