@@ -30,3 +30,18 @@ script update_score_fast_PSWii
 	endif
 	repeat
 endscript
+
+script get_current_multiplier 
+	multiplier = 4
+	if ($<player_status>.current_run < 10)
+		<multiplier> = 1
+	elseif ($<player_status>.current_run < 20)
+		<multiplier> = 2
+	elseif ($<player_status>.current_run < 30)
+		<multiplier> = 3
+	endif
+	if (($<player_status>.star_power_used = 1) || ($<player_status>.star_power_overlap = 1)))
+		<multiplier> = (<multiplier> * 2)
+	endif
+	return <...>
+endscript

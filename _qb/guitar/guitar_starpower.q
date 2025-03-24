@@ -179,3 +179,159 @@ script show_star_power_ready
     endif
     SpawnScriptNow nx_show_star_power_ready Params = {player_status = <player_status>}
 endscript
+
+script star_power_whammy 
+	if ($<player_status>.star_power_used = 1)
+		return
+	endif
+	last_x = 0
+	last_y = 0
+	dir_x = 1
+	dir_y = 1
+	first = 1
+	whammy_on = 0
+	whammy_star_on = 0
+	whammy_star_off = 0
+	ExtendCrc star_whammy_on <player_text> out = id
+	broadcastevent Type = <id> data = {pattern = <pattern> time = <time> guitar_stream = <guitar_stream> song = <song> array_entry = <array_entry> Player = <Player> player_status = <player_status> player_text = <player_text>}
+	<boss> = 0
+	if ($boss_battle = 1)
+		if (($<player_status>.Player) = 2)
+			<boss> = 1
+		endif
+	endif
+	<do_blue_whammys> = 1
+	if ($game_mode = p2_battle || $boss_battle = 1)
+		<do_blue_whammys> = 0
+	endif
+	if ((<Player> = 1) && ($is_network_game = 1) && ($game_mode = p2_coop))
+		SpawnScriptLater \{net_stream_star_whammy}
+	endif
+	begin
+	if (($<player_status>.whammy_on) = 0)
+		ExtendCrc star_whammy_off <player_text> out = id
+		broadcastevent Type = <id> data = {pattern = <pattern> time = <time> guitar_stream = <guitar_stream> song = <song> array_entry = <array_entry> Player = <Player> player_status = <player_status> player_text = <player_text> finished = 0}
+		break
+	endif
+	if (<boss> = 0)
+		if GuitarGetAnalogueInfo controller = ($<player_status>.controller)
+			if IsGuitarController controller = ($<player_status>.controller)
+				if (($<player_status>.bot_play) = 1)
+					<px> = 0.0
+					if (($<player_status>.debug_bot_mode) > 0)
+						sin ($<player_status>.debug_bot_whammy_theta)
+						<px> = ((<sin> + 1.0) / 2.0)
+					endif
+				else
+					<px> = ((<rightx> - $<player_status>.resting_whammy_position) / (1.0 - $<player_status>.resting_whammy_position))
+				endif
+				if (<px> < 0)
+					<px> = 0
+				endif
+				if (<first> = 1)
+					<last_x> = <px>
+					<first> = 0
+				endif
+				<xdiff> = (<px> - <last_x>)
+				if (<xdiff> < 0)
+					<xdiff> = (0.0 - <xdiff>)
+				endif
+				if (<xdiff> > 0.03)
+					<whammy_on> = 5
+				endif
+			else
+				<px> = 0
+				<py> = 0
+				if (<leftlength> > 0)
+					<px> = <leftx>
+					<py> = <lefty>
+				else
+					if (<rightlength> > 0)
+						<px> = <rightx>
+						<py> = <righty>
+					endif
+				endif
+				if (<first> = 1)
+					<last_x> = <px>
+					<last_y> = <py>
+					<first> = 0
+				endif
+				<xdiff> = (<px> - <last_x>)
+				if (<xdiff> < 0)
+					<xdiff> = (0.0 - <xdiff>)
+				endif
+				<ydiff> = (<py> - <last_y>)
+				if (<ydiff> < 0)
+					<ydiff> = (0.0 - <ydiff>)
+				endif
+				if (<xdiff> > 0.03)
+					<whammy_on> = 5
+				endif
+				if (<ydiff> > 0.03)
+					<whammy_on> = 5
+				endif
+			endif
+			if (<whammy_on> > 0)
+				<whammy_star_off> = 0
+				<whammy_star_on> = (<whammy_star_on> + 1)
+				beat_time = ($<player_status>.playline_song_beat_time / 1000.0)
+				beat_ratio = ($current_deltatime / <beat_time>)
+				if ($game_mode = p2_coop || $game_mode = p2_quickplay)
+					increase_star_power amount = ($star_power_whammy_add_coop * <beat_ratio>) player_status = <player_status>
+				else
+					increase_star_power amount = ($star_power_whammy_add * <beat_ratio>) player_status = <player_status>
+				endif
+				whammy_on = (<whammy_on> - 1)
+				if (<do_blue_whammys> = 1)
+					if (<whammy_star_on> = 5)
+						GetArraySize \{$gem_colors}
+						gem_count = 0
+						begin
+						if ((<pattern> && $button_values [<gem_count>]) = $button_values [<gem_count>])
+							formatText checksumName = whammy_id '%c_%i_whammybar_p%p' c = ($gem_colors_text [<gem_count>]) i = <array_entry> p = ($<player_status>.Player) AddToStringLookup = true
+							if ScreenElementExists id = <whammy_id>
+								bar_name = (<whammy_id> + 1)
+								MakeStarWhammy Name = <bar_name> Player = ($<player_status>.Player)
+							endif
+						endif
+						gem_count = (<gem_count> + 1)
+						repeat <array_Size>
+					endif
+				endif
+			else
+				<whammy_star_on> = 0
+				<whammy_star_off> = (<whammy_star_off> + 1)
+				if (<do_blue_whammys> = 1)
+					if (<whammy_star_off> = 5)
+						GetArraySize \{$gem_colors}
+						gem_count = 0
+						begin
+						if ((<pattern> && $button_values [<gem_count>]) = $button_values [<gem_count>])
+							formatText checksumName = whammy_id '%c_%i_whammybar_p%p' c = ($gem_colors_text [<gem_count>]) i = <array_entry> p = ($<player_status>.Player) AddToStringLookup = true
+							if ScreenElementExists id = <whammy_id>
+								bar_name = (<whammy_id> + 1)
+								MakeNormalWhammy Name = <bar_name> Player = ($<player_status>.Player)
+							endif
+						endif
+						gem_count = (<gem_count> + 1)
+						repeat <array_Size>
+					endif
+				endif
+			endif
+			<last_x> = <px>
+			<last_y> = <py>
+		endif
+	endif
+	<time> = (<time> - ($current_deltatime * 1000))
+	if (<time> <= 0)
+		ExtendCrc star_whammy_off <player_text> out = id
+		broadcastevent Type = <id> data = {pattern = <pattern> time = <time> guitar_stream = <guitar_stream> song = <song> array_entry = <array_entry> Player = <Player> player_status = <player_status> player_text = <player_text> finished = 1}
+		break
+	endif
+	Wait \{1
+		gameframe}
+	repeat
+	if ((<Player> = 1) && ($is_network_game = 1) && ($game_mode = p2_coop))
+		KillSpawnedScript \{Name = net_stream_star_whammy}
+	endif
+endscript

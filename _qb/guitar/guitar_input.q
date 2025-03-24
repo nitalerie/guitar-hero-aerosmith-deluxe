@@ -13,6 +13,11 @@ script control_whammy_pitchshift
 			<set_pitch> = 1
 			if ($<player_status>.bot_play = 1)
 				<len> = 0.0
+				if ((($<player_status>.debug_bot_mode) > 0) && (($<player_status>.debug_bot_whammy_speed) > 0.0))
+					change structurename = <player_status> debug_bot_whammy_theta = (($<player_status>.debug_bot_whammy_theta) + ($<player_status>.debug_bot_whammy_speed))
+					sin ($<player_status>.debug_bot_whammy_theta)
+					<len> = ((<sin> + 1.0) / 2.0)
+				endif
 			elseif IsGuitarController controller = ($<player_status>.controller)
 				<len> = ((<RightX> - $<player_status>.resting_whammy_position) / (1.0 - $<player_status>.resting_whammy_position))
 				if (<len> < 0.0)
@@ -133,4 +138,30 @@ script star_power_activate_and_drain
 	BroadCastEvent Type = <Type> Data = {player_Text = <player_Text> player_status = <player_status>}
 	<do_star> = 0
 	return <...>
+endscript
+
+script wait_for_inactive 
+	change structurename = <player_status> star_power_usable = 0
+	<frames_under> = 0
+	controller = ($<player_status>.controller)
+	if ((($<player_status>.bot_play) = 0) && (($<player_status>.debug_bot_mode > 0)))
+		if IsGuitarController controller = <controller>
+			if (<guitar_used_select> = 0)
+				begin
+				WaitOneGameFrame
+				if GuitarGetAnalogueInfo controller = <controller>
+					if (<verticaldist> > 128.0)
+						Increment \{frames_under}
+						if (<frames_under> >= 30)
+							break
+						endif
+					endif
+				endif
+				repeat
+			else
+				<guitar_used_select> = 0
+			endif
+		endif
+	endif
+	change structurename = <player_status> star_power_usable = 1
 endscript
